@@ -5,6 +5,14 @@
  */
 package view;
 
+import enitity.SanPham;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Admin
@@ -49,7 +57,6 @@ public class FormQuanLy extends javax.swing.JFrame {
         cboSort = new javax.swing.JComboBox<>();
         btnExit = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
 
@@ -58,6 +65,11 @@ public class FormQuanLy extends javax.swing.JFrame {
         setAutoRequestFocus(false);
         setBackground(new java.awt.Color(255, 255, 255));
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
@@ -165,7 +177,7 @@ public class FormQuanLy extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblSanPham);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 510, 1006, 190));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 510, 1240, 260));
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(51, 204, 0));
@@ -230,14 +242,10 @@ public class FormQuanLy extends javax.swing.JFrame {
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/br1.png"))); // NOI18N
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 0, 480, 410));
 
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/br2.jpg"))); // NOI18N
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(206, 510, -1, 250));
-
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/while.png"))); // NOI18N
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1230, 510));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1240, -1));
 
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/while.png"))); // NOI18N
         getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 510, 210, 250));
@@ -271,10 +279,13 @@ public class FormQuanLy extends javax.swing.JFrame {
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
+        search();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSortActionPerformed
         // TODO add your handling code here:
+        sort();
+        fillTable(listSP);
     }//GEN-LAST:event_btnSortActionPerformed
 
     private void txtIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdActionPerformed
@@ -296,6 +307,24 @@ public class FormQuanLy extends javax.swing.JFrame {
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnExitActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        setResizable(false);
+        setLocationRelativeTo(null);
+        cboSort.removeAllItems();
+        cboSort.addItem("");
+        cboSort.addItem("Tên SP A -> Z");
+        cboSort.addItem("Giá SP Tăng Dần");
+        cboSort.addItem("Giá SP Giảm Dần");
+        rdoNew.setSelected(true);
+        listSP.add(new SanPham("IPHONE10", "IPX", 5000, "Mới"));
+        listSP.add(new SanPham("IPHONE11", "IP11", 6000, "Cũ"));
+        listSP.add(new SanPham("IPHONE12", "IP12", 7000, "Cũ"));
+        listSP.add(new SanPham("IPHONE13", "IP13", 8000, "Mới"));
+        listSP.add(new SanPham("IPHONE12", "IPX12", 6000, "Cũ"));
+        fillTable(listSP);
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments
@@ -331,7 +360,72 @@ public class FormQuanLy extends javax.swing.JFrame {
             }
         });
     }
-    
+    ArrayList<SanPham> listSP = new ArrayList<>();
+    ArrayList<SanPham> listSearch = new ArrayList<>();
+
+    void fillTable(ArrayList<SanPham> list) {
+        DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
+        model.setRowCount(0);
+        int i = 0;
+        for (SanPham item : list) {
+            i++;
+            Object[] data = new Object[]{
+                i, item.getName(), item.getID(), item.getSalary(), item.getStatus()
+            };
+            model.addRow(data);
+        }
+    }
+
+    void search() {
+        for (SanPham item : listSP) {
+            if (item.getName().equals(txtName.getText())) {
+                listSearch.add(item);
+            }
+        }
+        if (listSearch.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không tồn tại sản phẩm!");
+            fillTable(listSP);
+        } else {
+            JOptionPane.showMessageDialog(this, "Đã tìm thấy sản phẩm!");
+            fillTable(listSearch);
+            listSearch.removeAll(listSearch);
+        }
+    }
+
+    void sort() {
+        switch (cboSort.getSelectedIndex()) {
+            case 1:
+                listSP.sort((SanPham s1, SanPham s2) -> s1.getName().compareTo(s2.getName()));
+                JOptionPane.showMessageDialog(this, "Sắp xếp theo tên SP A -> Z thành công!");
+                break;
+            case 2:
+                Collections.sort(listSP, (SanPham s1, SanPham s2) -> {
+                    if (s1.getSalary() > s2.getSalary()) {
+                        return 1;
+                    } else if (s1.getSalary() < s2.getSalary()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+                JOptionPane.showMessageDialog(this, "Sắp xếp theo giá SP tăng dần thành công!");
+                break;
+            case 3:
+                Collections.sort(listSP, (SanPham s1, SanPham s2) -> {
+                    if (s1.getSalary() < s2.getSalary()) {
+                        return 1;
+                    } else if (s1.getSalary() > s2.getSalary()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+                JOptionPane.showMessageDialog(this, "Sắp xếp theo giá SP giảm dần thành công!");
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Mời bạn chọn kiểu sắp xếp!");
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnExit;
@@ -349,7 +443,6 @@ public class FormQuanLy extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JRadioButton rdoNew;
